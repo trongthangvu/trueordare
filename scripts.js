@@ -123,3 +123,21 @@ document.getElementById("dareButton").addEventListener("click", () => {
   const randomIndex = Math.floor(Math.random() * dareTasks.length);
   document.getElementById("result").innerText = dareTasks[randomIndex];
 });
+
+const rulesModal = document.getElementById("rulesModal");
+const rulesButton = document.getElementById("rulesButton");
+const closeButton = document.getElementsByClassName("close")[0];
+
+rulesButton.onclick = function () {
+  rulesModal.style.display = "block";
+};
+
+closeButton.onclick = function () {
+  rulesModal.style.display = "none";
+};
+
+window.onclick = function (event) {
+  if (event.target === rulesModal) {
+    rulesModal.style.display = "none";
+  }
+};
