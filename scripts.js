@@ -203,7 +203,7 @@ let spinning = false;
 spinWheelButton.addEventListener("click", () => {
   if (!spinning && members.length > 0) {
     spinning = true;
-    const duration = 8000; // Thời gian quay (3 giây)
+    const duration = 7000; // Thời gian quay (3 giây)
     const initialAngle = Math.random() * 2 * Math.PI;
     const targetAngle = initialAngle + 2 * Math.PI * 10; // Số lượt quay
     const startTime = performance.now();
