@@ -32,7 +32,9 @@ h1 {
     margin-top: 0; /* Loại bỏ khoảng cách phía trên */
 }
 
-
+.marginTBottom{
+    margin-top: 80px;
+}
 .buttons {
     margin-bottom: 20px;
 }
