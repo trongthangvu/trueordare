@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <audio id="spinSound" src="src/audio/NhacXoSo-VA-4512353.mp3"></audio>
     <div class="container">
       <h1>True or Dare</h1>
       <div class="buttons">
@@ -15,6 +16,21 @@
         <button id="rulesButton">Luật chơi & Hình phạt</button>
       </div>
       <div id="result" class="result"></div>
+
+      <h2>Nhập tên các thành viên</h2>
+      <div class="member-inputs">
+        <input type="text" id="memberName" placeholder="Tên thành viên" />
+        <button id="addMemberButton">Thêm thành viên</button>
+      </div>
+      <ul id="membersList"></ul>
+      <div class="wheel-container">
+        <canvas id="wheelCanvas" width="500" height="500"></canvas>
+        <button id="spinWheelButton" onclick="spinWheel()">
+          Quay vòng chọn người
+        </button>
+        <button id="muteButton">Tắt nhạc</button>
+      </div>
+      <div id="selectedMember" class="result"></div>
     </div>
 
     <div id="rulesModal" class="modal">
@@ -38,7 +54,7 @@
         </p>
         <ul>
           <li>Uống một ly nước pha chanh, muối, và ớt.</li>
-          <li>Uống hết 1 ly rượu hoặc bia</li>
+          <li>Uống hết một ly bia hoặc rượu.</li>
           <li>Hát một bài hát ngẫu nhiên mà mọi người chọn.</li>
           <li>Thực hiện 20 cái chống đẩy.</li>
           <li>Chụp một bức ảnh ngớ ngẩn và đăng lên mạng xã hội.</li>

@@ -38,9 +38,6 @@ const trueQuestions = [
   "Bạn đã bao giờ phá hoại tài sản của ai đó chưa?",
   "Bạn có bao giờ ăn cắp đồ ăn từ tủ lạnh của ai đó không?",
   "Bạn có từng xem phim cấm chưa?",
-  "Bạn đã bao giờ bị ai đó lợi dụng chưa?",
-  "Bạn có từng nói dối để thoát khỏi một cuộc hẹn hò tồi tệ không?",
-  "Bạn có bao giờ lén nghe cuộc trò chuyện của người khác không?",
   "Bạn đã từng bị bắt gặp đang làm gì đó không đứng đắn chưa?",
   "Bạn có bao giờ mơ thấy điều gì đó kỳ lạ không?",
   "Bạn đã từng ngủ quên trong lớp học chưa?",
@@ -114,14 +111,29 @@ const dareTasks = [
   "Thực hiện một hành động ngẫu nhiên mà người khác chọn.",
 ];
 
+let usedTrueQuestions = [];
+let usedDareTasks = [];
+
 document.getElementById("trueButton").addEventListener("click", () => {
+  if (trueQuestions.length === 0) {
+    document.getElementById("result").innerText = "Hết câu hỏi rồi!";
+    return;
+  }
   const randomIndex = Math.floor(Math.random() * trueQuestions.length);
-  document.getElementById("result").innerText = trueQuestions[randomIndex];
+  const question = trueQuestions.splice(randomIndex, 1)[0];
+  usedTrueQuestions.push(question);
+  document.getElementById("result").innerText = question;
 });
 
 document.getElementById("dareButton").addEventListener("click", () => {
+  if (dareTasks.length === 0) {
+    document.getElementById("result").innerText = "Hết thử thách rồi!";
+    return;
+  }
   const randomIndex = Math.floor(Math.random() * dareTasks.length);
-  document.getElementById("result").innerText = dareTasks[randomIndex];
+  const task = dareTasks.splice(randomIndex, 1)[0];
+  usedDareTasks.push(task);
+  document.getElementById("result").innerText = task;
 });
 
 const rulesModal = document.getElementById("rulesModal");
@@ -141,3 +153,140 @@ window.onclick = function (event) {
     rulesModal.style.display = "none";
   }
 };
+
+const members = [];
+const memberNameInput = document.getElementById("memberName");
+const addMemberButton = document.getElementById("addMemberButton");
+const membersList = document.getElementById("membersList");
+const spinWheelButton = document.getElementById("spinWheelButton");
+const selectedMember = document.getElementById("selectedMember");
+
+addMemberButton.addEventListener("click", () => {
+  const memberName = memberNameInput.value.trim();
+  if (memberName) {
+    members.push(memberName);
+    const listItem = document.createElement("li");
+    membersList.appendChild(listItem);
+    memberNameInput.value = "";
+    drawWheel();
+  }
+});
+
+// Thêm biến global cho vòng quay
+let spinning = false;
+
+spinWheelButton.addEventListener("click", () => {
+  if (!spinning && members.length > 0) {
+    spinning = true;
+    const duration = 3000; // Thời gian quay (3 giây)
+    const initialAngle = Math.random() * 2 * Math.PI;
+    const targetAngle = initialAngle + 2 * Math.PI * 10; // Số lượt quay
+    const startTime = performance.now();
+
+    requestAnimationFrame(animateWheel);
+
+    function animateWheel(timestamp) {
+      const elapsedTime = timestamp - startTime;
+      const t = elapsedTime / duration;
+
+      if (elapsedTime >= duration) {
+        spinning = false;
+        const finalAngle = targetAngle % (2 * Math.PI);
+        const index = Math.floor(
+          (numberOfSegments - finalAngle / anglePerSegment) % numberOfSegments
+        );
+        selectedMember.innerText = `Người được chọn: ${members[index]}`;
+        // Gọi hàm spinWheel() khi vòng quay kết thúc
+        spinWheel();
+      } else {
+        const angle = initialAngle + t * (targetAngle - initialAngle);
+        drawWheel(angle);
+        requestAnimationFrame(animateWheel);
+      }
+    }
+  } else if (spinning) {
+    selectedMember.innerText = "Vui lòng đợi vòng quay kết thúc!";
+  } else {
+    selectedMember.innerText = "Vui lòng thêm thành viên trước khi quay!";
+  }
+});
+
+function drawWheel(arrowAngle) {
+  const canvas = document.getElementById("wheelCanvas");
+  const ctx = canvas.getContext("2d");
+  const wheelRadius = canvas.width / 2;
+  const numberOfSegments = members.length;
+  const anglePerSegment = (2 * Math.PI) / numberOfSegments;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < numberOfSegments; i++) {
+    const angleStart = i * anglePerSegment;
+    const angleEnd = (i + 1) * anglePerSegment;
+
+    ctx.beginPath();
+    ctx.moveTo(wheelRadius, wheelRadius);
+    ctx.arc(wheelRadius, wheelRadius, wheelRadius, angleStart, angleEnd);
+    ctx.closePath();
+
+    ctx.fillStyle = i % 2 === 0 ? "#ff7e5f" : "#feb47b";
+    ctx.fill();
+
+    // Vẽ đường phân chia màu đen
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(wheelRadius, wheelRadius);
+    ctx.rotate((angleStart + angleEnd) / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "white";
+    ctx.font = "bold 18px Roboto";
+    ctx.fillText(members[i], wheelRadius - 10, 10);
+    ctx.restore();
+  }
+
+  // Vẽ mũi tên
+  ctx.beginPath();
+  ctx.moveTo(
+    wheelRadius + Math.cos(arrowAngle) * wheelRadius * 0.8,
+    wheelRadius + Math.sin(arrowAngle) * wheelRadius * 0.8
+  );
+  ctx.lineTo(
+    wheelRadius + Math.cos(arrowAngle - Math.PI / 40) * wheelRadius * 0.9,
+    wheelRadius + Math.sin(arrowAngle - Math.PI / 40) * wheelRadius * 0.9
+  );
+  ctx.lineTo(
+    wheelRadius + Math.cos(arrowAngle + Math.PI / 40) * wheelRadius * 0.9,
+    wheelRadius + Math.sin(arrowAngle + Math.PI / 40) * wheelRadius * 0.9
+  );
+  ctx.closePath();
+  ctx.fillStyle = "#333";
+  ctx.fill();
+}
+function spinWheel() {
+  if (!isMuted) {
+    const audio = document.getElementById("spinSound");
+    audio.play();
+    audio.addEventListener("ended", function () {
+      audio.pause();
+    });
+  }
+}
+
+const muteButton = document.getElementById("muteButton");
+let isMuted = false;
+
+muteButton.addEventListener("click", () => {
+  const audio = document.getElementById("spinSound");
+  if (isMuted) {
+    audio.play();
+    muteButton.innerText = "Tắt nhạc";
+    isMuted = false;
+  } else {
+    audio.pause();
+    muteButton.innerText = "Bật nhạc";
+    isMuted = true;
+  }
+});
