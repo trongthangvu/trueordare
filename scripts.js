@@ -124,7 +124,15 @@ document.getElementById("trueButton").addEventListener("click", () => {
   usedTrueQuestions.push(question);
   document.getElementById("result").innerText = question;
 });
-
+document.getElementById("randomButton").addEventListener("click", function () {
+  const choices = ["Thật", "Thách"];
+  const randomChoice = choices[Math.floor(Math.random() * choices.length)];
+  if (randomChoice === "Thật") {
+    handleTrueChoice();
+  } else {
+    handleDareChoice();
+  }
+});
 document.getElementById("dareButton").addEventListener("click", () => {
   if (dareTasks.length === 0) {
     document.getElementById("result").innerText = "Hết thử thách rồi!";
@@ -135,7 +143,24 @@ document.getElementById("dareButton").addEventListener("click", () => {
   usedDareTasks.push(task);
   document.getElementById("result").innerText = task;
 });
+function handleTrueChoice() {
+  if (trueQuestions.length === 0) {
+    document.getElementById("result").innerText = "Hết câu hỏi rồi!";
+    return;
+  }
+  const question =
+    trueQuestions[Math.floor(Math.random() * trueQuestions.length)];
+  document.getElementById("result").innerText = `Thật: ${question}`;
+}
 
+function handleDareChoice() {
+  if (dareTasks.length === 0) {
+    document.getElementById("result").innerText = "Hết thử thách rồi!";
+    return;
+  }
+  const task = dareTasks[Math.floor(Math.random() * dareTasks.length)];
+  document.getElementById("result").innerText = `Thách: ${task}`;
+}
 const rulesModal = document.getElementById("rulesModal");
 const rulesButton = document.getElementById("rulesButton");
 const closeButton = document.getElementsByClassName("close")[0];
@@ -178,7 +203,7 @@ let spinning = false;
 spinWheelButton.addEventListener("click", () => {
   if (!spinning && members.length > 0) {
     spinning = true;
-    const duration = 6000; // Thời gian quay (3 giây)
+    const duration = 8000; // Thời gian quay (3 giây)
     const initialAngle = Math.random() * 2 * Math.PI;
     const targetAngle = initialAngle + 2 * Math.PI * 10; // Số lượt quay
     const startTime = performance.now();
@@ -290,3 +315,7 @@ muteButton.addEventListener("click", () => {
     isMuted = true;
   }
 });
+window.onload = function () {
+  document.getElementById("trueButton").disabled = true; // Vô hiệu hóa nút "Thật"
+  document.getElementById("dareButton").disabled = true; // Vô hiệu hóa nút "Thách"
+};
